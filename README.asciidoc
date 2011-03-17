@@ -39,6 +39,8 @@ always been awkward and slow with relational databases).
 
 ifndef::blogpost[]
 This document is also published as a http://srackham.wordpress.com/2011/03/17/bottle-mongodb-example/[blogpost].
+
+Here's a https://github.com/srackham/bottle-mongodb-example/blob/master/screenshot.png[screenshot].
 endif::blogpost[]
 
 ifdef::blogpost[]
