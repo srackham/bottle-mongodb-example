@@ -1,0 +1,66 @@
+body {
+  max-width: 800px;
+  font-family: Tahoma, Arial, sans-serif;
+}
+
+h1, h2 { color: green; }
+h1 { text-decoration: underline; }
+h2 { margin-bottom: 5px; }
+
+table {
+  border: 2px solid green;
+  background: #FFFFF8;
+  -moz-box-shadow: 3px 3px 3px silver;
+  -webkit-box-shadow: 3px 3px 3px silver;
+  box-shadow: 3px 3px 3px silver;
+}
+table td {
+  vertical-align: top;
+  padding: 5px;
+}
+table#messages {
+  width: 800px;
+  border-collapse: collapse;
+}
+table#messages tr {
+  height: 60px;
+}
+table#messages td {
+  border: 1px solid green;
+}
+table#messages td.nickname {
+  min-width: 120px;
+}
+table#messages td.text {
+  min-width: 350px;
+}
+table#messages td.date {
+  min-width: 150px;
+}
+
+textarea, input[type="text"], input[type="file"] {
+  min-width: 300px;
+}
+
+img {
+  border: none;
+}
+#poweredby img {
+   width: 150px;
+}
+img#spinner {
+   width: 15px;
+}
+
+#navigation {
+  float: left;
+  margin-top: 10px;
+}
+#navigation a {
+  color: green;
+  font-weight: bold;
+}
+#poweredby {
+  float: right;
+  margin-top: 5px;
+}

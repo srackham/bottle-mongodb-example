@@ -1,1 +1,88 @@
-Hello World!
+// Use this source for both GitHub README and blogpost.
+:blogpost-title: Bottle + MongoDB Example
+:blogpost-status: published
+:blogpost-doctype: article
+:blogpost-posttype: post
+:blogpost-categories: Bottle, MongoDB, Python
+
+= {blogpost-title}
+
+ifdef::blogpost[]
+*Published*: 2012-03-18
+endif::blogpost[]
+
+A didactic Web application written in Python to illustrate how to use
+the http://bottlepy.org/[Bottle] web-framework with the
+http://www.mongodb.org[MongoDB] database.
+
+It's a port I made of Mike Dirolf's
+https://github.com/mdirolf/djanMon[DjanMon] application (how to use
+Django with MongoDB).
+
+ifdef::blogpost[]
+// Wordpress processing instruction.
+pass::[<!--more-->]
+endif::blogpost[]
+
+http://bottlepy.org/[Bottle] is a wonderful micro web-framework, it's
+beautifully written and documented and has that ``just right'' feel
+about it.  Bottle has support for multiple webservers and template
+engines -- I'm really enjoying it after working with Django.
+
+http://www.mongodb.org[MongoDB] is a schemaless document-oriented
+database designed for the Web.  For me, working with MongoDB has been
+a revelation. Database creation, administration and migration (long
+the bane of database developers) is trivial in comparison with
+traditional SQL databases.  Document storage management is baked into
+MongoDB and is used in many web applications (document storage has
+always been awkward and slow with relational databases).
+
+ifndef::blogpost[]
+This document is also published as a http://srackham.wordpress.com/2011/03/17/bottle-mongodb-example/[blogpost].
+endif::blogpost[]
+
+ifdef::blogpost[]
+You can find the source on https://github.com/srackham/bottle-mongodb-example[GitHub].
+
+Here's a screenshot:
+
+image::screenshot.png[]
+endif::blogpost[]
+
+To run the application install the <<X1,prerequisite packages>> then:
+
+  git clone https://github.com/srackham/bottle-mongodb-example.git
+  cd bottle-mongodb-example
+  python bottle-mongodb-example.py
+
+The application creates and displays a paged list of user
+created messages which are stored in a MongoDB database along with
+uploaded images (no file system management required it's all in the
+database) -- not bad for 93 lines of Python code and a 79 line
+HTML template.  The really neat thing is that you don't have to create
+the database, tables or schema -- it all happens automatically.
+
+
+[[X1]]
+== Prerequisites
+- Python.
+- MongoDB (see the http://www.mongodb.org/[MongoDB] website for
+  install instructions).
+- PyMongo, the Python MongoDB driver:
+
+  sudo easy_install pymongo
+
+- The Bottle web-framework:
+
+  git clone https://github.com/defnull/bottle.git
+  cd bottle
+  python setup.py install
+
+I'm running in this environment -- it works for me but your mileage
+may vary:
+
+- Xubuntu 10.04
+- Bottle 0.9dev
+- Python 2.6.5
+- MongoDB 1.6.5
+- PyMongo 1.9
