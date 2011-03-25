@@ -81,6 +81,8 @@ def create():
 @get('/:collection#(images|thumbs)#/:filename')
 def get_database_file(collection, filename):
     ''' Send image or image thumb from file stored in the database. '''
+    import urllib
+    filename = urllib.unquote_plus(filename)
     f = gridfs.GridFS(db, collection).get_version(filename)
     response.content_type = f.content_type or mimetypes.guess_type(filename)
     return HTTPResponse(f)
