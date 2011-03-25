@@ -4,8 +4,10 @@ import random
 import mimetypes
 import cStringIO as StringIO
 
-from bottle import request, response, get, post, run, debug, view
+from bottle import request, response, get, post, run, debug
 from bottle import static_file, redirect, HTTPResponse
+from bottle import mako_view as view
+
 from PIL import Image
 from pymongo.connection import Connection
 from pymongo import DESCENDING
@@ -29,7 +31,7 @@ def _unique_filename(filename):
         return result
 
 @get(['/', '/list', '/list/:page#\d+#'])
-@view('list')
+@view('list.mako')
 def list(page=0):
     ''' List messages. '''
     PAGE_SIZE = 5
