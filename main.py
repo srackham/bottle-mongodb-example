@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from bottle import run, debug
 
 import controllers

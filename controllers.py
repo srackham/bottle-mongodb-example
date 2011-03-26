@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 import string
 import random
@@ -12,8 +13,6 @@ from PIL import Image
 from pymongo.connection import Connection
 from pymongo import DESCENDING
 import gridfs
-
-DEBUG = True
 
 db = Connection().bottle_mongodb_example
 imagesfs = gridfs.GridFS(db,'images')
