@@ -4,7 +4,7 @@ import random
 import mimetypes
 import cStringIO as StringIO
 
-from bottle import request, response, get, post, run, debug
+from bottle import request, response, get, post
 from bottle import static_file, redirect, HTTPResponse
 from bottle import mako_view as view
 
@@ -91,7 +91,3 @@ def get_database_file(collection, filename):
 def get_static_file(filename):
     ''' Send static files from ./static folder. '''
     return static_file(filename, root='./static')
-
-debug(DEBUG)
-run(host='localhost', port=8080, reloader=DEBUG)
-
