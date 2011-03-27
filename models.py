@@ -11,9 +11,9 @@ class Message(mongokit.Document):
     __database__ = DB_NAME
     __collection__ = 'messages'
     structure = {
-        'nickname': unicode,
-        'text': unicode,
-        'image': unicode,   # Image filename.
+        'nickname': basestring,
+        'text': basestring,
+        'image': basestring,   # Image filename.
         'date': datetime.datetime,  # Creation timestamp.
     }
     gridfs = {'files':['image', 'thumb']}
