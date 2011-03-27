@@ -46,9 +46,9 @@ ${self.footer()}
   %for message in messages:
     <tr>
       <td class="thumb">
-        %if message.has_image():
-        <a href="/image/${message.image_id()}">
-          <img src="/image/${message.thumb_id()}" alt="">
+        %if message.image_id is not None:
+        <a href="/image/${message.image_id}">
+          <img src="/image/${message.thumb_id}" alt="${message.image_filename|h}">
         </a>
         %endif
       </td>

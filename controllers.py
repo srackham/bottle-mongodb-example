@@ -47,15 +47,16 @@ def create():
                 ('.jpg', '.jpeg', '.png', '.bmp', '.gif')):
             redirect('/')
         mime = mimetypes.guess_type(upload.filename)[0]
+        msg.image_filename = upload.filename
         # Save fullsize image
-        file_id = msg.fs.put(upload.file, filename='image', content_type=mime)
+        msg.image_id = db.fs.put(upload.file, content_type=mime)
         # Save thumbnail
-        image = Image.open(db.fs.get(file_id))
+        image = Image.open(db.fs.get(msg.image_id))
         image.thumbnail((80, 60), Image.ANTIALIAS)
         data = StringIO.StringIO()
         image.save(data, image.format)
         data.seek(0)
-        msg.fs.put(data, filename='thumb', content_type=mime)
+        msg.thumb_id = db.fs.put(data, content_type=mime)
         msg.save()
     redirect('/')
 

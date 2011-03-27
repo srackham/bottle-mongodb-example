@@ -2,6 +2,7 @@
 import sys
 import datetime
 import mongokit
+from pymongo.objectid import ObjectId
 import gridfs
 
 DB_NAME = 'bottle_mongodb_example_mongokit'
@@ -14,24 +15,19 @@ class Message(mongokit.Document):
         'nickname': basestring,
         'text': basestring,
         'date': datetime.datetime,  # Creation timestamp.
+        'image_id': ObjectId,
+        'thumb_id': ObjectId,
+        'image_filename': basestring,
     }
-    gridfs = {'files':['image', 'thumb']}
     required_fields = ['nickname', 'text', 'date']
     default_values = {'date': datetime.datetime.now}
     use_dot_notation = True
 
-    def has_image(self):
-      try:
-        self.fs.get_version('image')
-        return True
-      except:
-        return False
+    def image(self):
+        return fs.get(self.image_id)
 
-    def image_id(self):
-        return self.fs.get_version('image')._id
-
-    def thumb_id(self):
-        return self.fs.get_version('thumb')._id
+    def thumb(self):
+        return fs.get(self.thumb_id)
 
 # Create database connections AFTER model declarations.
 con = mongokit.Connection()
