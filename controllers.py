@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 import string
 import random
 import mimetypes
@@ -8,15 +7,9 @@ import cStringIO as StringIO
 from bottle import request, response, get, post
 from bottle import static_file, redirect, HTTPResponse
 from bottle import mako_view as view
-
 from PIL import Image
-from pymongo.connection import Connection
 from pymongo import DESCENDING
-import gridfs
-
-db = Connection().bottle_mongodb_example
-imagesfs = gridfs.GridFS(db,'images')
-thumbsfs = gridfs.GridFS(db,'thumbs')
+import models as db
 
 def _unique_filename(filename):
     """ Return a unique filename based on filename to save in the database."""
@@ -24,7 +17,7 @@ def _unique_filename(filename):
     result[0] = '%s-%s' % (result[0],
                   ''.join(random.sample(string.letters + string.digits, 10)))
     result = '.'.join(result)
-    if imagesfs.exists({'result':result}):
+    if db.imagesfs.exists({'result':result}):
         return _unique_filename(filename)
     else:
         return result
@@ -41,10 +34,10 @@ def list(page=0):
     next_page = None
     if db.messages.count() > (page + 1) * PAGE_SIZE:
         next_page = page + 1
-    messages = (db.messages.find()
+    msgs = (db.messages.Message.find()
                 .sort('date', DESCENDING)
                 .limit(PAGE_SIZE).skip(page * PAGE_SIZE))
-    return {'messages': messages,
+    return {'messages': msgs,
             'prev_page': prev_page,
             'next_page': next_page,
             }
@@ -54,9 +47,10 @@ def create():
     ''' Save new message. '''
     if not (request.POST.get('nickname') and request.POST.get('text')):
         redirect('/')
-    message = {'nickname': request.POST['nickname'],
-               'text': request.POST['text'],
-               'date': datetime.datetime.now()}
+    msg = db.messages.Message()
+    msg.nickname = unicode(request.POST.get('nickname'))
+    msg.text = unicode(request.POST.get('text'))
+    msg.save()
     if 'image' in request.files:
         upload = request.files['image']
         filename = _unique_filename(upload.filename)
@@ -64,25 +58,27 @@ def create():
         if not filename.lower().endswith(
                 ('.jpg', '.jpeg', '.png', '.bmp', '.gif')):
             redirect('/')
-        message['image'] = filename
         # Save fullsize image
-        imagesfs.put(upload.file, filename=filename)
+        db.imagesfs.put(upload.file, filename=filename)
         # Save thumbnail
-        image = Image.open(imagesfs.get_version(filename))
+        image = Image.open(db.imagesfs.get_version(filename))
         image.thumbnail((80, 60), Image.ANTIALIAS)
         data = StringIO.StringIO()
         image.save(data, image.format)
         data.seek(0)
-        thumbsfs.put(data, filename=filename)
-    db.messages.insert(message)
+        db.thumbsfs.put(data, filename=filename)
+        # Update image filename after images have successfully uploaded.
+        msg.image = unicode(filename)
+        msg.save()
     redirect('/')
 
 @get('/:collection#(images|thumbs)#/:filename')
-def get_database_file(collection, filename):
+def get_image(collection, filename):
     ''' Send image or image thumb from file stored in the database. '''
     import urllib
     filename = urllib.unquote_plus(filename)
-    f = gridfs.GridFS(db, collection).get_version(filename)
+    fs = db.imagesfs if collection == 'images' else db.thumbsfs
+    f = fs.get_version(filename)
     response.content_type = f.content_type or mimetypes.guess_type(filename)
     return HTTPResponse(f)
 
