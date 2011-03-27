@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import string
-import random
 import mimetypes
 import cStringIO as StringIO
 
@@ -9,18 +7,9 @@ from bottle import static_file, redirect, HTTPResponse
 from bottle import mako_view as view
 from PIL import Image
 from pymongo import DESCENDING
+from pymongo.objectid import ObjectId
 import models as db
 
-def _unique_filename(filename):
-    """ Return a unique filename based on filename to save in the database."""
-    result = filename.rsplit('.', 1)
-    result[0] = '%s-%s' % (result[0],
-                  ''.join(random.sample(string.letters + string.digits, 10)))
-    result = '.'.join(result)
-    if db.imagesfs.exists({'result':result}):
-        return _unique_filename(filename)
-    else:
-        return result
 
 @get(['/', '/list', '/list/:page#\d+#'])
 @view('list.mako')
@@ -40,7 +29,7 @@ def list(page=0):
     return {'messages': msgs,
             'prev_page': prev_page,
             'next_page': next_page,
-            }
+           }
 
 @post('/create')
 def create():
@@ -53,33 +42,29 @@ def create():
     msg.save()
     if 'image' in request.files:
         upload = request.files['image']
-        filename = _unique_filename(upload.filename)
         # Only accept appropriate file extensions
-        if not filename.lower().endswith(
+        if not upload.filename.lower().endswith(
                 ('.jpg', '.jpeg', '.png', '.bmp', '.gif')):
             redirect('/')
+        mime = mimetypes.guess_type(upload.filename)[0]
         # Save fullsize image
-        db.imagesfs.put(upload.file, filename=filename)
+        file_id = msg.fs.put(upload.file, filename='image', content_type=mime)
         # Save thumbnail
-        image = Image.open(db.imagesfs.get_version(filename))
+        image = Image.open(db.fs.get(file_id))
         image.thumbnail((80, 60), Image.ANTIALIAS)
         data = StringIO.StringIO()
         image.save(data, image.format)
         data.seek(0)
-        db.thumbsfs.put(data, filename=filename)
+        msg.fs.put(data, filename='thumb', content_type=mime)
         # Update image filename after images have successfully uploaded.
-        msg.image = unicode(filename)
         msg.save()
     redirect('/')
 
-@get('/:collection#(images|thumbs)#/:filename')
-def get_image(collection, filename):
+@get('/image/:file_id')
+def get_image(file_id):
     ''' Send image or image thumb from file stored in the database. '''
-    import urllib
-    filename = urllib.unquote_plus(filename)
-    fs = db.imagesfs if collection == 'images' else db.thumbsfs
-    f = fs.get_version(filename)
-    response.content_type = f.content_type or mimetypes.guess_type(filename)
+    f = db.fs.get(ObjectId(file_id))
+    response.content_type = f.content_type
     return HTTPResponse(f)
 
 @get('/static/:filename#.+#')
