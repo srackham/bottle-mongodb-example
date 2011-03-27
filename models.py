@@ -13,7 +13,6 @@ class Message(mongokit.Document):
     structure = {
         'nickname': basestring,
         'text': basestring,
-        'image': basestring,   # Image filename.
         'date': datetime.datetime,  # Creation timestamp.
     }
     gridfs = {'files':['image', 'thumb']}
