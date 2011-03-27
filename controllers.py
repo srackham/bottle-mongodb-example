@@ -56,7 +56,6 @@ def create():
         image.save(data, image.format)
         data.seek(0)
         msg.fs.put(data, filename='thumb', content_type=mime)
-        # Update image filename after images have successfully uploaded.
         msg.save()
     redirect('/')
 
