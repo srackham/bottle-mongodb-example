@@ -8,7 +8,25 @@ import gridfs
 DB_NAME = 'bottle_mongodb_example_mongokit'
 
 
-class Message(mongokit.Document):
+class BaseDocument(mongokit.Document):
+
+    # Same as dict.update but doesn't add new document keys.
+    def update_from(self, other):
+        for k,v in other.items():
+            if k in self.__class__.structure.keys():
+                self[k] = v
+
+    # Same as dict.update but doesn't add new document keys.
+    def update(self, other):
+        if self.__class__.use_schemaless or self.__class__.skip_validation:
+            super(self.__class__, self).update(other)
+        else:
+            for k,v in other.items():
+                if k in self.__class__.structure.keys():
+                    self[k] = v
+
+
+class Message(BaseDocument):
     __database__ = DB_NAME
     __collection__ = 'messages'
     structure = {
@@ -28,20 +46,6 @@ class Message(mongokit.Document):
 
     def thumb(self):
         return fs.get(self.thumb_id)
-
-    def update_from(self, other):
-        for k,v in other.items():
-            if k in self.__class__.structure.keys():
-                self[k] = v
-
-    # Same as update_from() but overrides update().
-    def update(self, other):
-        if self.__class__.use_schemaless:
-            super(self.__class__, self).update(other)
-        else:
-            for k,v in other.items():
-                if k in self.__class__.structure.keys():
-                    self[k] = v
 
 # Create database connections AFTER model declarations.
 con = mongokit.Connection()
