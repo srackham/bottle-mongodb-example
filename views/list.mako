@@ -48,7 +48,7 @@ ${self.footer()}
       <td class="thumb">
         %if message.image_id is not None:
         <a href="/image/${message.image_id}">
-          <img src="/image/${message.thumb_id}" alt="${message.image_filename|h}">
+          <img src="/image/${message.thumb_id}" alt="" title="${message.image_filename|h}">
         </a>
         %endif
       </td>

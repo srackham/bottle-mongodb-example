@@ -29,6 +29,20 @@ class Message(mongokit.Document):
     def thumb(self):
         return fs.get(self.thumb_id)
 
+    def update_from(self, other):
+        for k,v in other.items():
+            if k in self.__class__.structure.keys():
+                self[k] = v
+
+    # Same as update_from() but overrides update().
+    def update(self, other):
+        if self.__class__.use_schemaless:
+            super(self.__class__, self).update(other)
+        else:
+            for k,v in other.items():
+                if k in self.__class__.structure.keys():
+                    self[k] = v
+
 # Create database connections AFTER model declarations.
 con = mongokit.Connection()
 con.register([Message])

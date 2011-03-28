@@ -37,8 +37,7 @@ def create():
     if not (request.POST.get('nickname') and request.POST.get('text')):
         redirect('/')
     msg = db.messages.Message()
-    msg.nickname = request.POST.get('nickname')
-    msg.text = request.POST.get('text')
+    msg.update_from(request.POST)
     msg.save()
     if 'image' in request.files:
         upload = request.files['image']
