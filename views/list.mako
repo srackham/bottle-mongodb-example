@@ -46,20 +46,20 @@ ${self.footer()}
   %for message in messages:
     <tr>
       <td class="thumb">
-        %if message.image_id is not None:
-        <a href="/image/${message.image_id}">
-          <img src="/image/${message.thumb_id}" alt="" title="${message.image_filename|h}">
+        %if message.image.grid_id is not None:
+        <a href="/image/${message.id}">
+          <img src="/thumb/${message.id}" alt="" title="${message.image_filename|h}">
         </a>
         %endif
       </td>
       <td class="nickname">
-        ${message['nickname']}
+        ${message.nickname}
       </td>
       <td class="text">
-        ${message['text']}
+        ${message.text}
       </td>
       <td class="date">
-        ${message['date'].strftime('%X %d %b %y')}
+        ${message.date.strftime('%X %d %b %y')}
       </td>
     </tr>
   %endfor
