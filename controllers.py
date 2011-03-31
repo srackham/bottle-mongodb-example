@@ -1,17 +1,18 @@
+# -*- coding: utf-8 -*-
 import datetime
 import string
 import random
 import mimetypes
 import cStringIO as StringIO
 
-from bottle import request, response, get, post, run, debug, view
+from bottle import request, response, get, post
 from bottle import static_file, redirect, HTTPResponse
+from bottle import mako_view as view
+
 from PIL import Image
 from pymongo.connection import Connection
 from pymongo import DESCENDING
 import gridfs
-
-DEBUG = True
 
 db = Connection().bottle_mongodb_example
 imagesfs = gridfs.GridFS(db,'images')
@@ -29,7 +30,7 @@ def _unique_filename(filename):
         return result
 
 @get(['/', '/list', '/list/:page#\d+#'])
-@view('list')
+@view('list.mako')
 def list(page=0):
     ''' List messages. '''
     PAGE_SIZE = 5
@@ -79,6 +80,8 @@ def create():
 @get('/:collection#(images|thumbs)#/:filename')
 def get_database_file(collection, filename):
     ''' Send image or image thumb from file stored in the database. '''
+    import urllib
+    filename = urllib.unquote_plus(filename)
     f = gridfs.GridFS(db, collection).get_version(filename)
     response.content_type = f.content_type or mimetypes.guess_type(filename)
     return HTTPResponse(f)
@@ -87,7 +90,3 @@ def get_database_file(collection, filename):
 def get_static_file(filename):
     ''' Send static files from ./static folder. '''
     return static_file(filename, root='./static')
-
-debug(DEBUG)
-run(host='localhost', port=8080, reloader=DEBUG)
-
