@@ -3,7 +3,7 @@ import datetime
 from mongoengine import Document, connect
 from mongoengine import StringField, DateTimeField, FileField
 
-DB_NAME = 'bottle_mongodb_example_mongokit'
+DB_NAME = 'bottle_mongodb_example_mongoengine'
 
 class Message(Document):
     nickname = StringField(required=True)
